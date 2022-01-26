@@ -18,7 +18,7 @@ class TestIconomi(unittest.TestCase):
         self.get('/v1/strategies')
 
     def test_activity(self):
-        self.get('/v1/user/activity')
+        self.get('/v1/user/activity?type=FEES_AND_EARNINGS')
 
     def test_get_structure(self):
         ticker = '<YOUR_TICKER>'
@@ -50,6 +50,10 @@ class TestIconomi(unittest.TestCase):
         self.post('/v1/user/withdraw', payload)
 
     def generate_signature(self, payload, request_type, request_path, timestamp): 
+        query = request_path.find('?')
+        if query != -1:
+            request_path = request_path[0:query]
+            
         data = ''.join([timestamp, request_type.upper(), request_path, payload]).encode()
         signed_data = hmac.new(self.API_SECRET.encode(), data, hashlib.sha512)
         return base64.b64encode(signed_data.digest())
